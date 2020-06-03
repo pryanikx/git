@@ -1,0 +1,263 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <fstream>
+#include <Windows.h>
+
+using namespace std;
+
+class Car
+{
+public:
+	string model;
+	short year;
+	short price;
+	float V;
+
+	 void show_data(const Car Obj[], int amount)
+	{
+		try
+		{
+			system("cls");
+
+			ofstream out;
+			out.open("D:\\Autosalon.txt");
+
+			if (out.is_open())
+			{
+
+				cout << "\t\t\tАвтосалон\n\n";
+				cout << "№\t" << "Модель\t" << "Год\t" << "Цена\t" << "Объем двигателя" << endl;
+				cout << "==================================================================" << endl;
+
+				out << "\t\t\tАвтосалон\n\n";
+				out << "№\t" << "Модель\t" << "Год\t" << "Цена\t" << "Объем двигателя" << endl;
+				out << "==================================================================" << endl;
+
+				for (int i = 1; i < amount; i++)
+				{
+					cout << i << '\t' << Obj[i].model << '\t' << Obj[i].year << '\t' << Obj[i].price << '\t' << Obj[i].V << endl;
+					out << i << '\t' << Obj[i].model << '\t' << Obj[i].year << '\t' << Obj[i].price << '\t' << Obj[i].V << endl;
+				}
+			}
+
+			else
+			{
+				throw 1;
+			}
+		}
+
+		catch (int e)
+		{
+			cout << "Error...\n";
+			return;
+		}
+	}
+
+	 void sort_price(Car Obj[], int amount)
+	{
+		for (int i = 1; i <= amount - 1; ++i)
+		{
+			int smallest = i;
+
+			for (int current = i + 1; current <= amount; ++current)
+			{
+				if (Obj[current].price < Obj[smallest].price)
+				{
+					smallest = current;
+				}
+			}
+
+			std::swap(Obj[i].model, Obj[smallest].model);
+			std::swap(Obj[i].year, Obj[smallest].year);
+			std::swap(Obj[i].price, Obj[smallest].price);
+			std::swap(Obj[i].V, Obj[smallest].V);
+		}
+
+		show_data(Obj, amount);
+	}
+
+	virtual void sort_year(Car Obj[], int amount)
+	{
+			for (int i = 1; i <= amount - 1; ++i)
+			{
+				int smallest = i;
+
+				for (int current = i + 1; current <= amount; ++current)
+				{
+					if (Obj[current].year > Obj[smallest].year)
+					{
+						smallest = current;
+					}
+				}
+
+				std::swap(Obj[i].model, Obj[smallest].model);
+				std::swap(Obj[i].year, Obj[smallest].year);
+				std::swap(Obj[i].price, Obj[smallest].price);
+				std::swap(Obj[i].V, Obj[smallest].V);
+			}
+
+		show_data(Obj, amount);
+	}
+};
+
+class Autosalon : public Car
+{
+public:
+
+	void data();
+
+};
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+
+	Autosalon a;
+	a.data();
+
+	return 0;
+}
+
+void Autosalon::data()
+{
+	const int amount = 5;
+	Car car[amount]{};
+
+	try {
+		while (true)
+		{
+			cout << "==================================================================" << endl;
+			cout << "Выберите действие:\n";
+			cout << "1 - добавить в список\n";
+			cout << "2 - удалить из списка\n";
+			cout << "3 - вывести данные списка\n";
+			cout << "4 - сортировка по цене\n";
+			cout << "5 - сортировка по году выпуска\n";
+
+			string n;
+			cin >> n;
+
+			if (n == "1") // добавление в список
+			{
+				for (int i = 1; i <= amount; i++)
+				{
+					cout << "Хотите добавить автомобиль?(y/n) ";
+					char c;
+					cin >> c;
+
+					if (c == 'y')
+					{
+						while (car[i].model != "")
+							i++;
+
+						if (i > amount)
+						{
+							throw 1;
+						}
+
+						cout << "Модель: ";
+						cin >> car[i].model;
+						cout << "Год: ";
+						cin >> car[i].year;
+						cout << "Цена: ";
+						cin >> car[i].price;
+						cout << "Объем: ";
+						cin >> car[i].V;
+						cin.get();
+						cout << endl;
+					}
+
+					else if (c == 'n')
+					{
+						show_data(car, amount);
+						break;
+					}
+
+					else if (c != 'n' && c != 'y')
+					{
+						throw 3;
+					}
+				}
+			}
+
+			if (n == "2") // удаление из списка
+			{
+				system("cls");
+				show_data(car, amount);
+				cout << endl;
+				int N;
+				cout << "Введите номер записи для удаления: (0 чтобы вернуться к меню)\t";
+				cin >> N;
+
+				if (N == 0) {}
+
+				if (car[N].model == "" && car[N].year == 0 && car[N].price == 0 && car[N].V == 0)
+				{
+					throw 2;
+				}
+
+				car[N].model = "";
+				car[N].year = NULL;
+				car[N].price = NULL;
+				car[N].V = NULL;
+
+				show_data(car, amount);
+			}
+
+			if (n == "3") // вывод данных списка и в консоль в файл
+			{
+				show_data(car, amount);
+			}
+
+			if (n == "4") //сортировка по цене
+			{
+				sort_price(car, amount);
+			}
+
+			if (n == "5") // сортировка по году выпуска
+			{
+				sort_year(car, amount);
+			}
+
+			if (n == "break") // выход из программы
+			{
+				break;
+			}
+		}
+	}
+
+	catch (int ex)
+	{
+		if (ex == 1)
+		{
+			cout << "\nСписок заполнен!\n\n";
+			Sleep(1000);
+			show_data(car, amount);
+			data();
+		}
+
+		if (ex == 2)
+		{
+			cout << "\nВ данном месте списка ничего нет!\n\n";
+			show_data(car, amount);
+			Sleep(1000);
+			data();
+		}
+
+		if (ex == 3)
+		{
+			cout << "\nНеправильный ввод\n\n";
+			Sleep(1000);
+			return;
+		}
+	}
+
+	catch (...)
+	{
+		cout << "\nError...";
+		cout << "\nError...";
+		cout << "\nError...";
+		system("pause");
+	}
+}
